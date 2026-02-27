@@ -1,25 +1,42 @@
-﻿# CamperPlanner
+# CamperPlanner
 
-A web app to plan camping and backpacking trips with clear progress tracking.
+A local-first camping and backpacking planning app.
 
-## MVP status
-The current implementation includes the full MVP planning workflow:
-- Trip CRUD with status and invitee tracking
-- Campsite candidate planning with votes and status flow
-- Single-booked-campsite enforcement
-- Itinerary CRUD with completion and reorder controls
+## Current workflow
+The app now targets a real frontend development stack:
+- React 18
+- Vite dev server with hot reload
+- localStorage persistence for local-first iteration
+
+## Why this setup
+- Faster UI iteration than manual static file reloads
+- Cleaner component structure as the app grows
+- Still keeps your current local-only workflow and saved browser state
+
+## Features in the current MVP
+- Trip CRUD with status and notes
+- Invitee tracking with per-person status
+- Campsite candidate planning with voting and booking state
+- Itinerary CRUD with move up/down ordering and completion tracking
 - Dashboard stats, phase labels, and quick filters
-- Local persistence with schema-versioned storage and migration guard
+- Schema-versioned local storage with migration guard
 
-## Product direction
-- MVP is single-user (you) with a collaboration-ready data model.
-- The long-term target is group planning where everyone can see status and align on next steps.
+## Prerequisite
+Install Node.js 20+ so `npm` is available.
 
-## Out of scope for MVP
-- Authentication and multi-user sync
-- Campflare integrations and booking alerts
-- Weather integrations
-- Drag-and-drop itinerary interactions
+## Start locally
+Option 1:
+1. Run `./start.ps1`
+
+Option 2:
+1. Run `npm.cmd install`
+2. Run `npm.cmd run dev`
+
+Vite will serve the app at `http://127.0.0.1:5173/`.
+
+## Local data
+Trip data is still stored in the browser using `localStorage`.
+That means reopening the app in the same browser profile keeps your saved data.
 
 ## Working docs
 - [MVP Spec](./docs/mvp-spec.md)
@@ -27,12 +44,5 @@ The current implementation includes the full MVP planning workflow:
 - [MVP Scope Summary](./docs/mvp-scope.md)
 - [Smoke Test Checklist](./docs/smoke-test-checklist.md)
 
-## Quick start
-1. Open `src/index.html` in your browser.
-2. Create a trip and open trip details.
-3. Add campsite options, set booking status, and build itinerary.
-
-## Basic tests
-1. Open `tests/test-runner.html` in your browser.
-2. Confirm all utility tests show PASS.
-
+## Utility tests
+Open `tests/test-runner.html` in a browser to run the utility tests for the shared data logic.
