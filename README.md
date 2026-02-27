@@ -1,4 +1,4 @@
-﻿# Trail Planner App
+﻿# CamperPlanner
 
 A web app to plan camping and backpacking trips with clear progress tracking.
 
@@ -35,3 +35,4 @@ The current implementation includes the full MVP planning workflow:
 ## Basic tests
 1. Open `tests/test-runner.html` in your browser.
 2. Confirm all utility tests show PASS.
+
