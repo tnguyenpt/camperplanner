@@ -637,14 +637,52 @@ export default function App() {
                           ))}
                         </select>
                       </div>
-                      <p className="meta">Source: {site.source || "-"}</p>
+                      <p className="meta">
+                        Source:{" "}
+                        {formatSourceHref(site.source) ? (
+                          <a href={formatSourceHref(site.source)} target="_blank" rel="noreferrer">
+                            {formatSourceLabel(site.source)}
+                          </a>
+                        ) : (
+                          formatSourceLabel(site.source)
+                        )}
+                      </p>
                       {site.notes ? <p className="meta">{site.notes}</p> : null}
                       <div className="actions">
                         <div className="vote-wrap">
-                          <button className="small" type="button" onClick={() => updateSelectedTrip((trip) => ({ ...trip, campsites: trip.campsites.map((item) => item.id === site.id ? { ...item, upvotes: item.upvotes + 1 } : item) }))}>+1</button>
-                          <span className="meta">{site.upvotes}</span>
-                          <button className="small secondary" type="button" onClick={() => updateSelectedTrip((trip) => ({ ...trip, campsites: trip.campsites.map((item) => item.id === site.id ? { ...item, downvotes: item.downvotes + 1 } : item) }))}>-1</button>
-                          <span className="meta">{site.downvotes}</span>
+                          <button
+                            className="small vote-button vote-up"
+                            type="button"
+                            aria-label={`Upvote ${site.name}`}
+                            onClick={() =>
+                              updateSelectedTrip((trip) => ({
+                                ...trip,
+                                campsites: trip.campsites.map((item) =>
+                                  item.id === site.id ? { ...item, upvotes: item.upvotes + 1 } : item
+                                ),
+                              }))
+                            }
+                          >
+                            👍 {site.upvotes}
+                          </button>
+                          <button
+                            className="small secondary vote-button vote-down"
+                            type="button"
+                            aria-label={`Downvote ${site.name}`}
+                            onClick={() =>
+                              updateSelectedTrip((trip) => ({
+                                ...trip,
+                                campsites: trip.campsites.map((item) =>
+                                  item.id === site.id ? { ...item, downvotes: item.downvotes + 1 } : item
+                                ),
+                              }))
+                            }
+                          >
+                            👎 {site.downvotes}
+                          </button>
+                          <span className="meta vote-score">
+                            Score: {site.upvotes - site.downvotes}
+                          </span>
                         </div>
                         <button className="small secondary" type="button" onClick={() => setCampsiteForm({ id: site.id, name: site.name, source: site.source, status: site.status, notes: site.notes })}>Edit</button>
                         <button className="small secondary" type="button" onClick={() => updateSelectedTrip((trip) => ({ ...trip, campsites: trip.campsites.filter((item) => item.id !== site.id) }))}>Delete</button>
@@ -725,5 +763,27 @@ function validateTripPayload(payload) {
     return "End date must be the same as or after the start date.";
   }
   return null;
+}
+
+function formatSourceLabel(source) {
+  if (!source) return "-";
+
+  try {
+    const url = new URL(source);
+    return url.hostname.replace(/^www\./, "");
+  } catch {
+    return source.length > 36 ? `${source.slice(0, 33)}...` : source;
+  }
+}
+
+function formatSourceHref(source) {
+  if (!source) return "";
+
+  try {
+    const url = new URL(source);
+    return url.toString();
+  } catch {
+    return "";
+  }
 }
 
