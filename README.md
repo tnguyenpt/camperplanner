@@ -67,6 +67,17 @@ Open: `http://127.0.0.1:5173`
 - [MVP Scope Summary](./docs/mvp-scope.md)
 - [Smoke Test Checklist](./docs/smoke-test-checklist.md)
 
+## Suggested screenshots (portfolio)
+
+Add these files under `docs/screenshots/`:
+
+- `dashboard-overview.png`
+- `trip-details.png`
+- `campsite-voting.png`
+- `backup-import-export.png`
+
+When ready, they can be embedded directly in this README.
+
 ## Next iteration (portfolio roadmap)
 
 - Break UI into dedicated feature components
