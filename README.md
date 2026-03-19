@@ -20,6 +20,7 @@ The app now targets a real frontend development stack:
 - Itinerary CRUD with move up/down ordering and completion tracking
 - Dashboard stats, phase labels, and quick filters
 - Schema-versioned local storage with migration guard
+- One-click JSON backup export/import for local data safety
 
 ## Prerequisite
 Install Node.js 20+ so `npm` is available.

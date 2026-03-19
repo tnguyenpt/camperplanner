@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { loadState, saveState } from "./storage.js";
 import {
   CAMPSITE_STATUSES,
@@ -63,6 +63,7 @@ export default function App() {
   const [campsiteError, setCampsiteError] = useState("");
   const [itineraryForm, setItineraryForm] = useState(EMPTY_ITINERARY_FORM);
   const [itineraryError, setItineraryError] = useState("");
+  const importFileRef = useRef(null);
 
   const selectedTrip = useMemo(
     () => trips.find((trip) => trip.id === selectedTripId) || null,
@@ -350,11 +351,72 @@ export default function App() {
     });
   }
 
+  function handleExportState() {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      schemaVersion: 1,
+      trips,
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const date = new Date().toISOString().slice(0, 10);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `camperplanner-backup-${date}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function triggerImportPicker() {
+    importFileRef.current?.click();
+  }
+
+  async function handleImportState(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const sourceTrips = Array.isArray(parsed) ? parsed : parsed?.trips;
+
+      if (!Array.isArray(sourceTrips)) {
+        throw new Error("Backup does not contain a valid trips list.");
+      }
+
+      const nextTrips = sourceTrips.map(normalizeTrip);
+      commitTrips(nextTrips);
+      setSelectedTripId(nextTrips[0]?.id || null);
+      setTripFormError("");
+    } catch (error) {
+      setTripFormError(error instanceof Error ? error.message : "Could not import backup file.");
+    }
+  }
+
   return (
     <main className="app-shell">
       <header>
         <h1>CamperPlanner</h1>
         <p>Plan campsites, itinerary, and trip readiness in one place.</p>
+        <div className="actions" style={{ marginTop: 12 }}>
+          <button type="button" className="small secondary" onClick={handleExportState}>
+            Export Backup
+          </button>
+          <button type="button" className="small secondary" onClick={triggerImportPicker}>
+            Import Backup
+          </button>
+          <input
+            ref={importFileRef}
+            type="file"
+            accept="application/json"
+            style={{ display: "none" }}
+            onChange={handleImportState}
+          />
+        </div>
       </header>
 
       <section className="panel">
