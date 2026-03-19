@@ -70,6 +70,11 @@ export default function App() {
     [trips, selectedTripId]
   );
 
+  const selectedTripInviteeSummary = useMemo(
+    () => (selectedTrip ? getInviteeSummary(selectedTrip) : { accepted: 0, pending: 0, declined: 0 }),
+    [selectedTrip]
+  );
+
   const filteredTrips = useMemo(() => {
     const sorted = sortTripsByDate(trips);
     if (activeFilter === "all") return sorted;
@@ -611,7 +616,7 @@ export default function App() {
                   </div>
                 </form>
                 <p className="meta">
-                  {getInviteeSummary(selectedTrip).accepted} accepted, {getInviteeSummary(selectedTrip).pending} pending, {getInviteeSummary(selectedTrip).declined} declined
+                  {selectedTripInviteeSummary.accepted} accepted, {selectedTripInviteeSummary.pending} pending, {selectedTripInviteeSummary.declined} declined
                 </p>
                 <div className="entity-list">
                   {!selectedTrip.invitees.length ? <p className="state-message">No invitees yet.</p> : null}
@@ -827,25 +832,34 @@ function validateTripPayload(payload) {
   return null;
 }
 
-function formatSourceLabel(source) {
-  if (!source) return "-";
+function parseSourceUrl(source) {
+  if (!source) return null;
 
   try {
-    const url = new URL(source);
-    return url.hostname.replace(/^www\./, "");
+    return new URL(source);
   } catch {
-    return source.length > 36 ? `${source.slice(0, 33)}...` : source;
+    // Convenience: allow bare domains like recreation.gov
+    try {
+      return new URL(`https://${source}`);
+    } catch {
+      return null;
+    }
   }
 }
 
-function formatSourceHref(source) {
-  if (!source) return "";
+function formatSourceLabel(source) {
+  if (!source) return "-";
 
-  try {
-    const url = new URL(source);
-    return url.toString();
-  } catch {
-    return "";
+  const parsed = parseSourceUrl(source);
+  if (parsed) {
+    return parsed.hostname.replace(/^www\./, "");
   }
+
+  return source.length > 36 ? `${source.slice(0, 33)}...` : source;
+}
+
+function formatSourceHref(source) {
+  const parsed = parseSourceUrl(source);
+  return parsed ? parsed.toString() : "";
 }
 
